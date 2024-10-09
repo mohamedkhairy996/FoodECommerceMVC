@@ -1,0 +1,71 @@
+﻿@model CartVM
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+    var total = 0.0;
+}
+
+
+@if (Model.Products.Count()>0)
+{
+<table class="table">
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Product Price</th>
+            <th>Quantity</th>
+            <th>Total Price</th>
+            <th>Edit Quantity</th>
+        </tr>
+        
+    </thead>
+    <tbody>
+        
+@foreach (var item in Model.Products) {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.Price</td>
+            <td id ="QunatityCount">@Model.Quantity[item.Name]</td>
+            <td id="QunatityPrice">$@Model.QuantityPrice[item.Name]</td>
+                @{total = total + Model.QuantityPrice[item.Name];}
+                <td><button type='button' class='btn btn-outline-success' onclick="Edit(@item.Id,@Model.Quantity[item.Name]+1)"> Up </button>
+                        <button type='button' class='btn btn-outline-warning' onclick="Edit(@item.Id,@Model.Quantity[item.Name]-1)"> Down </button>
+                    <button type='button' class='ms-5 btn btn-outline-danger' onclick="Edit(@item.Id,0)"> Remove </button>
+                </td>
+            
+        </tr>
+}<div style="border:double solid 2px green">
+        <table class="table table-active">
+            <tr>
+                <th>Total</th>
+                <th>=</th>
+                <th>$@total</th>
+                <th></th>
+                
+                <th>
+                        <a asp-action="OrderDetails" asp-controller="orders" class="btn btn-outline-success mt-auto">Purshase</a>
+                </th>
+            </tr>
+            
+</table>
+        </div>
+
+    </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-danger mt-5 ">
+        <h1 class="alert-heading">Your Cart is Empty!</h1>
+        <p class="mb-0">No Products were added yet.</p>
+    
+    <a asp-action="All" asp-controller="Product" class="btn btn-outline-primary mt-3 ms-2 fs-2 ">Go Shopping</a>
+    </div>
+    
+}
+
+@section Scripts
+{
+    
+
+}

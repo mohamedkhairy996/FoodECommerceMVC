@@ -1,0 +1,28 @@
+﻿@if (User.IsInRole("admin") || User.IsInRole("Sales"))
+{
+    <input id="ifAdmin" value="1" hidden />
+}
+else
+{
+    <input id="ifAdmin" value="0" hidden />
+}
+
+<div class="row p-1">
+  <div class="table-responsive">
+    <table id="myOrderTable" class="table table-dark table-striped table-bordered" style="width: 100%">
+      <thead class="thead-dark">
+        <tr class="table-success">
+          <th scope="col">OrderDate</th>
+          <th scope="col">Name</th>
+          <th scope="col">TotalPrice</th>
+          <th scope="col">orderStatus</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+</div>
+
+@section Scripts {
+
+    <script src="~/js/orderhistory.js" asp-append-version="true"></script>
+}

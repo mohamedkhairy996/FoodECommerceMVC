@@ -1,0 +1,9 @@
+﻿@model List<DomainLayerCore.Models.Message>
+
+<ul id="list" class="p-2">
+    @foreach (var msg in Model)
+    {
+        string alignmentClass = msg.AdminMsg ? "flex-end" : "flex-start";
+        <li class="fs-3" style="display:flex; justify-content:@alignmentClass;">@msg.Msg</li>
+    }
+</ul>

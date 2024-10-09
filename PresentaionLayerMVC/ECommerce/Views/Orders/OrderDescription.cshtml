@@ -1,0 +1,158 @@
+﻿@model OrderDetailsVM
+
+@{
+    ViewData["Title"] = "OrderDescription";
+    @if (TempData["AlertMessage"] != null)
+    {
+        <script>
+            alert('@TempData["AlertMessage"]');
+        </script>
+    }
+}
+
+<h1>Order Description</h1>
+<label id="orderHeaderId" >@Model.OrderHeader.Id</label>
+<table class="table tab-content">
+   
+    <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderHeader.Name)
+            </th>
+            <td>
+                @Html.DisplayFor(model => model.OrderHeader.Name)
+            </td>
+    </tr>
+    <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderHeader.PhoneNumber)
+            </th>
+            <td>
+                @Html.DisplayFor(model => model.OrderHeader.PhoneNumber)
+            </td>
+    </tr>
+    <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderHeader.DateOfOrder)
+            </th>
+            <td>
+                @Html.DisplayFor(model => model.OrderHeader.DateOfOrder)
+            </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.OrderHeader.DateOfShipped)
+        </th>
+        <td>
+            @Html.DisplayFor(model => model.OrderHeader.DateOfShipped)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.OrderHeader.OrderStatus)
+        </th>
+        <td>
+            @Html.DisplayFor(model => model.OrderHeader.OrderStatus)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.OrderHeader.TotalOrderAmount)
+        </th>
+        <td>
+            $@Html.DisplayFor(model => model.OrderHeader.TotalOrderAmount)
+        </td>
+    </tr>
+  
+@if (Model.OrderHeader.OrderStatus=="Shipped")
+{
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.OrderHeader.Carrier)
+        </th>
+        <td>
+            @Html.DisplayFor(model => model.OrderHeader.Carrier)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.OrderHeader.TrackingNumber)
+        </th>
+        <td>
+            @Html.DisplayFor(model => model.OrderHeader.TrackingNumber)
+        </td>
+    </tr>
+}
+</table>
+
+<div class="row p-1">
+        <div class="table-responsive">
+        <table id="UserOrderDescription" class="table table-dark table-striped table-bordered" style="width: 100%">
+                <thead class="thead-dark">
+                    <tr class="table-success">
+                        <th scope="col">Name</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+</div>
+<label  id="IdOfCustomer" hidden >@Model.OrderHeader.UserId</label>
+<a id="btnAdminPrcesss" class="btn btn-outline-primary">Status </a>
+
+@if (Model.OrderHeader.OrderStatus=="Pending")
+{
+    if (User.IsInRole("admin"))
+    {
+        <a id="btnAdminPrcess" class="btn btn-outline-primary" asp-action="UpdateOrderStatus" asp-route-status="InProcess" asp-route-id="@Model.OrderHeader.Id">Update Status To In Process</a>
+    }
+    <a class="btn btn-outline-danger" asp-action="UpdateOrderStatus" asp-route-status="Canceled" asp-route-id="@Model.OrderHeader.Id">Cancele Order</a>
+}
+else if (Model.OrderHeader.OrderStatus == "InProcess")
+{
+    if (User.IsInRole("admin"))
+    {
+        <form asp-action="UpdateOrderStatus" method="get">
+            <div class="form-control">
+                <input type="hidden" asp-for="OrderHeader.Id" value="@Model.OrderHeader.Id" />
+                <input type="hidden" asp-for="OrderHeader.OrderStatus" value="Shipped" />
+                <div class="pt-1 pb-1">                
+                    <input asp-for="OrderHeader.Carrier" required  type="text" class="card-input" placeholder="Enter Carrier Name"/>
+                    <span asp-validation-for="OrderHeader.Carrier" class="text-danger"></span>
+                </div>
+                    <div class="pt-1 pb-1">
+                    <input asp-for="OrderHeader.TrackingNumber" required type="text" class="card-input" placeholder="Enter Tracking Number" />
+                    <span asp-validation-for="OrderHeader.TrackingNumber"  class="text-danger"></span>
+                </div>
+                <div class="pt-1 pb-1">
+                    <button id="btnAdminPrcess" type="submit" class="btn btn-outline-success">Update Status To Shipped</button>
+                </div>
+            </div>
+        </form>
+    }
+    <a class="btn btn-outline-danger" asp-action="UpdateOrderStatus" asp-route-status="Canceled" asp-route-id="@Model.OrderHeader.Id">Cancele Order</a>
+}
+else if (Model.OrderHeader.OrderStatus == "Shipped")
+{
+    if (User.IsInRole("admin"))
+    {
+        <a class="btn btn-outline-success" id="btnAdminPrcess" asp-action="UpdateOrderStatus" asp-route-status="Completed" asp-route-id="@Model.OrderHeader.Id">Update Status To Completed</a>
+    }
+    <a class="btn btn-outline-danger" asp-action="UpdateOrderStatus" asp-route-status="Canceled" asp-route-id="@Model.OrderHeader.Id">Cancele Order</a>
+
+}
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    @* <script>
+        document.getElementById("submitBtn").addEventListener("click", function () {
+            document.getElementById("myForm").submit();
+            console.log("submitBtn");
+        });
+    </script>  *@
+    <script src="~/js/orderdescription.js" asp-append-version="true"></script>
+
+    
+}

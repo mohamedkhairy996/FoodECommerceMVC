@@ -1,0 +1,259 @@
+﻿@model SummaryViewModel
+
+@{
+    ViewData["Title"] = "OrderDetails";
+    var total = 0.0;
+    var QuantityPrice = 0.0;
+}
+
+<h1>Order CheckOut</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+
+        .card {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            min-width: 0;
+            word-wrap: break-word;
+            background-color: #fff;
+            background-clip: border-box;
+            
+          
+        
+        }
+
+        .card-input {
+            width: 100%;
+            height: 40px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            
+        }
+        .input-group .card-input{
+            background-color:transparent;
+            color:black;
+        }
+
+        .card-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 45%;
+        }
+
+            .card-button:hover {
+                background-color: #45a049;
+            }
+
+        .card-table {
+            width: 100%;
+        }
+
+            .card-table th, .card-table td {
+                text-align: left;
+                padding: 8px;
+            }
+            .total .card-input
+            {
+            background-color: teal;
+            color:white;
+            }
+
+
+    </style>
+</head>
+<body>
+    <div class="form-control border-0">
+<form asp-action="OrderDetails" method="post" class="form-control">
+<div class="row mt-5">
+        <div class="col-lg-6 col-md-12">
+                    <h2 class="">Customer Details</h2>
+                    <label class="" for="name">Name:</label>
+                        <input type="text" asp-for="OrderHeaderSummary.Name" class="card-input" />
+                        <span asp-validation-for="OrderHeaderSummary.Name" class="text-danger"></span>
+
+                        <label for="phone">Phone Number:</label>
+                        <input type="text" asp-for="OrderHeaderSummary.PhoneNumber" class="card-input" />
+                        <span asp-validation-for="OrderHeaderSummary.PhoneNumber" class="text-danger"></span>
+
+                        <label for="address">Delivery Street Address:</label>
+                        <input type="text" asp-for="OrderHeaderSummary.DeliveryStreet" class="card-input" />
+                        <span asp-validation-for="OrderHeaderSummary.DeliveryStreet" class="text-danger"></span>
+
+                        <label for="city">City:</label>
+                        <input type="text" asp-for="OrderHeaderSummary.City" class="card-input" />
+                        <span asp-validation-for="OrderHeaderSummary.City" class="text-danger"></span>
+
+                        <label for="state">State:</label>
+                        <input type="text" asp-for="OrderHeaderSummary.State" class="card-input" />
+                        <span asp-validation-for="OrderHeaderSummary.State" class="text-danger"></span>
+
+                        <label for="postal">Postal Code:</label>
+                        <input type="text" asp-for="OrderHeaderSummary.PostalCode" class="card-input" />
+                        <span asp-validation-for="OrderHeaderSummary.PostalCode" class="text-danger"></span>
+
+                        <label for="date">Date Of Order:</label>
+                        <input type="text" asp-for="OrderHeaderSummary.DateOfOrder" disabled class="card-input" />
+                        <span asp-validation-for="OrderHeaderSummary.DateOfOrder" class="text-danger"></span>
+
+                </div>
+                    <div class="row p-1 col-lg-6 col-md-12">
+                        <div class="table-responsive">
+                    <table id="UserOrder" class="table table-dark table-striped table-bordered" style="width: 100%">
+                                <thead class="thead-dark">
+                                    <tr class="table-success">
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Price</th>
+                                        <th scope="col">Quantity</th>
+                                        <th scope="col">Total</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <br>
+                    <label asp-for="@Model.PaymentMethod">Payment Options:</label>
+                    <select asp-for="SelectedPaymentMethod" asp-items="Model.PaymentMethod" class="form-control"></select>
+                    <span asp-validation-for="SelectedPaymentMethod" class="text-danger"></span>
+                </div>
+            
+            <div class="card-section total mt-1" style="width:100%; height: 100px; background-color: #ffc107; padding: 20px; border-radius: 10px;">
+                <div style="display:flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <label for="subtotal">SubTotals:</label>
+                        <input type="text" id="subtotal" class="card-input" value="$@total" readonly>
+                    </div>
+                    <div>
+                        <label for="tax">Sales Tax:</label>
+                        <input type="text" id="tax" class="card-input" value="$0.05" readonly>
+                    </div>
+                    <div>
+                        <label for="total">Total Bills:</label>
+                        <input type="text" id="TotalAfterTax" asp-for="OrderHeaderSummary.TotalOrderAmount" class="card-input" value="" readonly>
+                    </div>
+            </div>
+                
+            
+            
+        </div>
+            <div class="text-center" style="margin-top: 20px;">
+                <button class="btn btn-outline-success" type="submit">Submit Order</button>
+            </div>
+    </form>
+    </div>
+@* <form asp-action="OrderDetails" method="post" class="form-control">
+    <div class="container">
+        <div class="card">
+            <div class="card-section input-group ">
+                <h2 class="card-title">Customer Details</h2>
+                    <label class="display:block;" for="name">Name:</labelc>
+                    <input type="text" asp-for="OrderHeaderSummary.Name" class="card-input" />
+                    <span asp-validation-for="OrderHeaderSummary.Name" class="text-danger"></span>
+
+                    <label for="phone">Phone Number:</label>
+                    <input type="text" asp-for="OrderHeaderSummary.PhoneNumber" class="card-input" />
+                    <span asp-validation-for="OrderHeaderSummary.PhoneNumber" class="text-danger"></span>
+
+                    <label for="address">Delivery Street Address:</label>
+                    <input type="text" asp-for="OrderHeaderSummary.DeliveryStreet" class="card-input" />
+                    <span asp-validation-for="OrderHeaderSummary.DeliveryStreet" class="text-danger"></span>
+
+                    <label for="city">City:</label>
+                    <input type="text" asp-for="OrderHeaderSummary.City" class="card-input" />
+                    <span asp-validation-for="OrderHeaderSummary.City" class="text-danger"></span>
+
+                    <label for="state">State:</label>
+                    <input type="text" asp-for="OrderHeaderSummary.State" class="card-input" />
+                    <span asp-validation-for="OrderHeaderSummary.State" class="text-danger"></span>
+
+                    <label for="postal">Postal Code:</label>
+                    <input type="text" asp-for="OrderHeaderSummary.PostalCode" class="card-input" />
+                    <span asp-validation-for="OrderHeaderSummary.PostalCode" class="text-danger"></span>
+
+                    <label for="date">Date Of Order:</label>
+                    <input type="text" asp-for="OrderHeaderSummary.DateOfOrder" disabled class="card-input" />
+                    <span asp-validation-for="OrderHeaderSummary.DateOfOrder"  class="text-danger"></span>
+
+            </div>
+            <div class="card-section">
+                <h2 class="card-title">Shopping Cart Details</h2>
+                <table class="card-table">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Product Price</th>
+                            <th>Quantity</th>
+                            <th>Total Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.UserCartList)
+                        {
+                            <tr>
+                                <td>@item.Product.Name</td>
+                                <td>@item.Product.Price</td>
+                                <td >@item.Quantity</td>
+                                @{
+                                    QuantityPrice = item.Quantity * @item.Product.Price;
+                                    total += QuantityPrice;
+                                    
+                                }
+                                <td>$@QuantityPrice</td>
+                                
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <h2>Total Price = $@total</h2>
+                <br>
+              
+                <label asp-for="@Model.PaymentMethod">Payment Options:</label>
+                    <select asp-for="SelectedPaymentMethod" asp-items="Model.PaymentMethod" class="form-control"></select>
+                    <span asp-validation-for="SelectedPaymentMethod" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="card-section" style="width:100%; height: 100px; background-color: #ffc107; padding: 20px; border-radius: 10px;">
+            <div style="display:flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <label for="subtotal">SubTotals:</label>
+                    <input type="text" id="subtotal" class="card-input" value="$@total" readonly>
+                </div>
+                <div>
+                    <label for="tax">Sales Tax:</label>
+                    <input type="text" id="tax" class="card-input" value="$0.05" readonly>
+                </div>
+                <div>
+                    <label for="total">Total Bills:</label>
+                        @{
+                            var totalAfterTax = total * 0.05 + total;
+                            
+                        }
+                        <input type="text" id="total" class="card-input" value="@totalAfterTax" readonly>
+                        <input type="text" asp-for="OrderHeaderSummary.TotalOrderAmount" class="card-input" value="@totalAfterTax" hidden>
+                </div>
+            </div>
+        </div>
+    </div>
+        <button class="card-button" type="submit" style="margin-top: 20px;">Submit Order</button>
+
+</form> *@
+</body>
+</html>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/orderditails.js" asp-append-version="true"></script>
+   
+}

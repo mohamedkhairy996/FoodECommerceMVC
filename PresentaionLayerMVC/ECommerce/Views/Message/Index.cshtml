@@ -1,0 +1,97 @@
+﻿@model List<DomainLayerCore.Models.Message>
+@using System.Security.Claims
+@{
+    ViewData["Title"] = "Index";
+    string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    string Username = User.FindFirstValue(ClaimTypes.Name);
+    var selectItems = new SelectList(ViewBag.headers, "User1_Id", "CustomerName");
+}
+
+<h2>Chat With Admin</h2>
+
+@if (User.IsInRole("admin"))
+{
+    foreach (var item in ViewBag.headers)
+    {
+        <p>@item.User1_Id</p>
+    }
+    <select id="selectUser" asp-items="selectItems" onchange="redirectToMessage(this.value)">
+        <option value="" disabled selected>Select a user</option>
+    </select>
+    <input type="text" id="txtToUser"  hidden />
+    <input type="text" id="selectedOption"  hidden />
+
+    <div id="messageListContainer">
+        <!-- Messages will be loaded here via AJAX -->
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <textarea type="text" id="txtmsg" placeholder="Enter Message ..." style="height:8rem;width:30rem;"></textarea>
+            </div>
+
+
+        </div>
+    </div>
+    <a id="btnSendToUser" class="btn btn-outline-info" style="display:flex ">Send</a>
+}
+else
+{
+    <div>
+        <hr />
+        <ul id="list" class="p-2">
+            @foreach (var msg in Model)
+            {
+                // Determine alignment based on user role and sender
+                string alignmentClass = msg.AdminMsg ? "flex-end" : "flex-start";
+                <li class="fs-3" style="display:flex; justify-content:@alignmentClass;">@msg.Msg</li>
+            }
+
+        </ul>
+
+        <input id="CurrentUserId" value="@userId" hidden />
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <textarea type="text" id="txtmsg" placeholder="Enter Message ..." style="height:8rem;width:30rem;"></textarea>
+            </div>
+
+
+        </div>
+    </div>
+    <a id="btnSend" class="btn btn-outline-success">Send</a>
+    
+}
+
+
+<script>
+    function redirectToMessage(selectedValue) {
+        if (selectedValue) {
+            // Construct the URL based on the selected value
+            // const url = `/message/index?UserId=${selectedValue}`;
+            // // Redirect to the specified route
+            // window.location.href = url;
+
+
+            document.getElementById("txtToUser").value = selectedValue;
+           
+            console.log(document.getElementById("selectUser").value);
+
+
+            $.ajax({
+                type: "get",
+                url: "/message/LoadMessages/" + selectedValue,  // Send data as JSON string
+                success: function (response) {
+                    console.log("Messages Loaded!");
+                    $("#messageListContainer").html(response);
+
+                },
+                error: function (err) {
+                    console.error("Error sending message: ", err);
+                }
+            });
+        
+        }
+    }
+</script>

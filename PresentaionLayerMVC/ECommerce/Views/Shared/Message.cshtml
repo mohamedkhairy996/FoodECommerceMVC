@@ -1,0 +1,26 @@
+﻿@model DomainLayerCore.Models.Message
+
+<h1>Message</h1>
+<hr />
+<ul id="list">
+</ul>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+            <div class="form-group">
+            <label>Enter Message</label>
+            <input type="text" id="txtmsg" placeholder="Message" />
+            </div>
+                @if (User.IsInRole("admin"))
+                {
+                    <input type="text" id="txtToUser" placeholder="Recipient Id" />
+                    <button id="btnSendToUser"  class="btn btn-outline-success">Send</button>
+                }else
+                {
+                    <a id="btnSend" class="btn btn-outline-success">Send</a>
+                }
+
+    </div>
+</div>
+<script src="~/js/signalr.js"></script>
+

@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "bootstrap-icons@1.11.3",
+      "destination": "wwwroot/bootstrap-icons/"
+    },
+    {
+      "library": "aspnet-signalr@1.0.27",
+      "destination": "wwwroot/lib/aspnet-signalr/"
+    }
+  ]
+}

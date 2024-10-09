@@ -1,0 +1,89 @@
+﻿@model ProductViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+    SelectList categories = new SelectList(Model.CategoriesList, "Id", "Name");
+
+}
+
+<h1>Edit</h1>
+
+<h4>Product @Model.Product.Name</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            @* <input type="hidden" asp-for="Product.Id" /> *@
+            <div class="form-group">
+                <label asp-for="Product.Name" class="control-label"></label>
+                <input asp-for="Product.Name" class="form-control" />
+                <span asp-validation-for="Product.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Product.Description" class="control-label"></label>
+                <textarea asp-for="Product.Description" class="form-control" placeholder="Max is 200"></textarea>
+                <span asp-validation-for="Product.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Product.Price" class="control-label"></label>
+                <input asp-for="Product.Price" class="form-control" />
+                <span asp-validation-for="Product.Price" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Category</label>
+                <select asp-for="Product.CategoryId" asp-items="categories" class="form-control">
+                    <option value="0">-- Select Category --</option>
+                </select>
+                <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Images" class="control-label"></label>
+                <input type="file" asp-for="Images" multiple class="form-control" />
+                <span asp-validation-for="Images" class="text-danger"></span>
+            </div>
+            @if (Model.Product.HomeImageUrl != "")
+            {
+                <div class="row p-2">
+                    <div >
+                        <div class="card">
+                            <a asp-action="Details" class="card-ing-top">
+                                <img src="~/Images/@Model.Product.HomeImageUrl" class="rounded ing-fluid card-ing-top rounded" width="150" height="100" />
+                            </a>
+                            <div class="card-body">
+
+                                <a class="card-title" asp-action="DeleteImageFromProduct" asp-route-url="@Model.Product.HomeImageUrl"> Remove</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="row p-2">
+                @foreach (var item in Model.Product.ImageUrls)
+                {
+                    <div >
+                        <div class="card">
+                            <a asp-action="Details" asp-route-Id="@item.Id." class="card-img-top">
+                                <img src="/Images/@item.ImageUrl" class="card-img-top rounded" width="150" height="150" />
+                            </a>
+                            <div class="card-body">
+                                <a class="card-title" asp-action="DeleteImageFromProduct" asp-route-url="@item.ImageUrl"> Remove</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
