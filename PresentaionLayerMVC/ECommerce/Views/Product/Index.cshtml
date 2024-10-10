@@ -65,12 +65,11 @@ else{
                 {
                     <td><img src="~/Images/noimage.png" class="rounded img-fluid" width="150" height="100" /></td>
                 }
-                
                
             
             <td>
                     <a class="btn btn-outline-secondary " asp-action="Edit" asp-route-id="@item.Id"> Edit</a>
-                    @* <a class="btn btn-outline-primary " asp-action="Details" asp-route-id="@item.Id">Details</a> *@
+                    <a class="btn btn-outline-primary " asp-action="Details" asp-route-id="@item.Id">Details</a>
                     <a class="btn btn-outline-danger " asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>

@@ -33,7 +33,7 @@ namespace ECommerce.Controllers
 
         public IActionResult Index()
         {
-            return View(_unitOfWork.Products.GetAll());
+            return View(_unitOfWork.Products.GetAllWithCategory());
         }
         public IActionResult All(string ? SearchName = null)
         {
@@ -91,50 +91,30 @@ namespace ECommerce.Controllers
         public async Task<IActionResult> Create(ProductViewModel productVM)
         {
             string HomeImageUrl = "";
+            _unitOfWork.Products.Add(productVM.Product);
+            _unitOfWork.ApplyChanges();
+            
+            var newProduct = _unitOfWork.Products.GetByID(productVM.Product.Id);
             if (productVM.Images != null)
             {
                 foreach (var image in productVM.Images)
                 {
-                    HomeImageUrl = image.FileName;
-                    if (HomeImageUrl.Contains("Home"))
-                        {
-                            HomeImageUrl = Uploadfiles(image);
-                            break;
-                        }
+                    HomeImageUrl = Uploadfiles(image);
+                    var addressImage = new PImages
+                    {
+                        ImageUrl = HomeImageUrl,
+                        ProductId = newProduct.Id,
+                        ProductName = newProduct.Name,
+                    };
+                    await _unitOfWork.PImages.AddAsync(addressImage);
                 }
             }
             productVM.Product.HomeImageUrl = HomeImageUrl;
-            _unitOfWork.Products.Add(productVM.Product);
-            
-            var newProduct = _unitOfWork.Products.GetByID(productVM.Product.Id);
             productVM.Inventories.Name= newProduct.Name;
             productVM.Inventories.Category = _unitOfWork.Categories.GetByID(newProduct.CategoryId).Name;
             await _unitOfWork.Inventories.AddAsync(productVM.Inventories);
             await _unitOfWork.ApplyChangesAsync();
-
-            if (productVM.Images !=null)
-            {
-                foreach (var image in productVM.Images)
-                {
-                    string tempfilename = image.FileName;
-                    if (!tempfilename.Contains("Home"))
-                    {
-                        string stringfilename = Uploadfiles(image);
-                        var addressImage = new PImages
-                        {
-                            ImageUrl = stringfilename,
-                            ProductId = newProduct.Id,
-                            ProductName = newProduct.Name,
-                        };
-                        await _unitOfWork.PImages.AddAsync(addressImage);
-                    }
-
-                }
-            }
-            await _unitOfWork.ApplyChangesAsync();
             return RedirectToAction("Index","Product");
-           
-
         }
 
         private string Uploadfiles(IFormFile image)
@@ -174,6 +154,7 @@ namespace ECommerce.Controllers
         public async Task<IActionResult> Edit(int id ,ProductViewModel productVM)
         {
             var oldProduct = _unitOfWork.Products.GetByID(id);
+            var stringfilename = "";
             if (oldProduct != null)
             {
                 oldProduct.Id = id;
@@ -185,34 +166,30 @@ namespace ECommerce.Controllers
                 {
                     foreach (var image in productVM.Images)
                     {
-                        string tempfilename = image.FileName;
-                        if (!tempfilename.Contains("Home"))
+                         stringfilename = Uploadfiles(image);
+                        var addressImage = new PImages
                         {
-                            string stringfilename = Uploadfiles(image);
-                            var addressImage = new PImages
-                            {
-                                ImageUrl = stringfilename,
-                                ProductId = id,
-                                ProductName = productVM.Product.Name,
-                            };
-                            await _unitOfWork.PImages.AddAsync(addressImage);
-                        }else
-                        {
-                            if (oldProduct.HomeImageUrl == "")
-                            {
-                                string HomeImageUrl = image.FileName;
-                                if (HomeImageUrl.Contains("Home"))
-                                {
-                                    HomeImageUrl = Uploadfiles(image);
-                                    oldProduct.HomeImageUrl = HomeImageUrl;
-                                }
-                            }
-                         }
-                     }
-                 }
-                _unitOfWork.Products.Update(oldProduct);
-                _unitOfWork.ApplyChanges();
+                            ImageUrl = stringfilename,
+                            ProductId = id,
+                            ProductName = productVM.Product.Name,
+                        };
+                        await _unitOfWork.PImages.AddAsync(addressImage);
+                    }
+                }
+                if (oldProduct.HomeImageUrl == null || oldProduct.HomeImageUrl == "noimage.png")
+                {
+                    var image = _unitOfWork.PImages.GetProductImages(id).FirstOrDefault();
+                    var imageURl = "noimage.png";
+                    if (image!=null)
+                    {
+                        imageURl = image.ImageUrl;
+                    }
+                    oldProduct.HomeImageUrl = stringfilename != "" ? stringfilename : imageURl;
+
+                }
             }
+        _unitOfWork.Products.Update(oldProduct);
+        _unitOfWork.ApplyChanges();
         return RedirectToAction("Index");
         }
 
@@ -259,20 +236,21 @@ namespace ECommerce.Controllers
         {
             if (url != null)
             {
-                int id = 0;
-                if (url.Contains("Home"))
+                var product = _unitOfWork.Products.GetByHomeImage(url);
+                var id = 0;
+                if (product != null) 
                 {
-                    var product = _unitOfWork.Products.GetByHomeImage(url);
-                    product.HomeImageUrl = "";
-                    id = product.Id;
+                    var image1 = _unitOfWork.PImages.GetProductImages(product.Id).First().ImageUrl;
+                    var image2 = _unitOfWork.PImages.GetProductImages(product.Id).Last().ImageUrl;
+                    image2 = image1 == image2 ? null : image2;
+                    product.HomeImageUrl =  image1 == product.HomeImageUrl ? image2 : image1;
                    _unitOfWork.Products.Update(product);
                 }
-                else
-                {
-                    var image = _unitOfWork.PImages.GetPImagesByImageUrl(url);
-                    id = image.ProductId;
-                   _unitOfWork.PImages.Delete(image);
-                }
+
+                var image = _unitOfWork.PImages.GetPImagesByImageUrl(url);
+                id = image.ProductId;
+                _unitOfWork.PImages.Delete(image);
+                
                 string imgUrl = "Images\\" + url;
                 var toDeleteImage = Path.Combine(_webHostEnvironment.WebRootPath, imgUrl.Trim('\\'));
                 DeleteImage(toDeleteImage); 

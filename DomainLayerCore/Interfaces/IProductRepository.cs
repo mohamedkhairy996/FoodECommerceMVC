@@ -10,6 +10,8 @@ namespace DomainLayerCore.Interfaces
 
         public List<Product> GetProductsByName(string searchName);
 
+        public List<Product> GetAllWithCategory();
+
         public Product GetByIdWithCategory(int? id);
     }
 }

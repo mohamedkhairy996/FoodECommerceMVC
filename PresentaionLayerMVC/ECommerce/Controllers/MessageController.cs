@@ -100,5 +100,25 @@ namespace PresentaionLayer.Controllers
 
             return Ok();
         }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> SendNotification([FromBody] MessageDto messageDto)
+        {
+            var userId = messageDto.FromUserId == Admin ? messageDto.ToUserId : messageDto.FromUserId;
+            var user =await _userManager.FindByIdAsync(userId);
+            // Use SignalR to send the message in real-time
+            if (messageDto.ToUserId == Admin)
+            {
+                await _hubContext.Clients.User(Admin).SendAsync("sendAdminMsg", messageDto.Msg, user.FullName);
+            }
+            else
+            {
+                await _hubContext.Clients.User(messageDto.ToUserId).SendAsync("sendUserMsg", messageDto.Msg);
+            }
+
+            return Ok();
+        }
     }
 }

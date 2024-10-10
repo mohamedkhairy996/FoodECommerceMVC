@@ -13,7 +13,14 @@
 <h1>Order Description</h1>
 <label id="orderHeaderId" >@Model.OrderHeader.Id</label>
 <table class="table tab-content">
-   
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.OrderHeader.Id)
+        </th>
+        <td>
+            @Html.DisplayFor(model => model.OrderHeader.Id)
+        </td>
+    </tr>
     <tr>
             <th>
                 @Html.DisplayNameFor(model => model.OrderHeader.Name)
@@ -99,7 +106,7 @@
         </div>
 </div>
 <label  id="IdOfCustomer" hidden >@Model.OrderHeader.UserId</label>
-<a id="btnAdminPrcesss" class="btn btn-outline-primary">Status </a>
+<input type="text" id="txtToUser" value="@Model.OrderHeader.UserId" hidden />
 
 @if (Model.OrderHeader.OrderStatus=="Pending")
 {
@@ -138,8 +145,8 @@ else if (Model.OrderHeader.OrderStatus == "Shipped")
     if (User.IsInRole("admin"))
     {
         <a class="btn btn-outline-success" id="btnAdminPrcess" asp-action="UpdateOrderStatus" asp-route-status="Completed" asp-route-id="@Model.OrderHeader.Id">Update Status To Completed</a>
+        <a class="btn btn-outline-danger"  id="btnAdminPrcess"  asp-action="UpdateOrderStatus" asp-route-status="Canceled" asp-route-id="@Model.OrderHeader.Id">Cancele Order</a>
     }
-    <a class="btn btn-outline-danger" asp-action="UpdateOrderStatus" asp-route-status="Canceled" asp-route-id="@Model.OrderHeader.Id">Cancele Order</a>
 
 }
 
@@ -152,7 +159,9 @@ else if (Model.OrderHeader.OrderStatus == "Shipped")
             console.log("submitBtn");
         });
     </script>  *@
+
     <script src="~/js/orderdescription.js" asp-append-version="true"></script>
+    
 
     
 }

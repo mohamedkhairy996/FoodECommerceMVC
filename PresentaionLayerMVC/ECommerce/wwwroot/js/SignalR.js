@@ -1,6 +1,7 @@
 ﻿// signalr-setup.js
 function setupToAdminMessageHandler(connection) {
-    connection.on("sendAdminMsg", function (msg , id , name) {
+    connection.on("sendAdminMsg", function (msg, id, name) {
+        alert(name + " : " + msg);
         if (id == $("#txtToUser").val()) {
 
             document.getElementById("list").innerHTML += `
@@ -8,17 +9,17 @@ function setupToAdminMessageHandler(connection) {
         `;
 
         }
-        alert(name+" : "+msg);
     });
 }
 
 function setupToUserMessageHandler(connection) {
     connection.on("sendUserMsg", function (msg) {
+
+        alert("Admin : " + msg);
         document.getElementById("list").innerHTML += `
          <li class="fs-3" style="display:flex; justify-content:flex-end;">${msg}</li>
         `;
 
-        alert("Admin : "+msg);
     });
 }
 
@@ -93,6 +94,26 @@ $("#btnSendToUser").on("click", function () {
          <li class="fs-3" style="display:flex; justify-content:flex-end;">${msg}</li>
         `;
             document.getElementById("txtmsg").value = "";
+        },
+        error: function (err) {
+            console.error("Error sending message: ", err);
+        }
+    });
+});
+
+
+$("#btnAdminPrcess").on("click", function () {
+    var msg = "Your Order's Status Has Been Updated Check it...!";
+    var to = $("#txtToUser").val();
+    console.log(to);
+    // Send message to the MessageController
+    $.ajax({
+        type: "POST",
+        url: "/message/SendNotification",
+        contentType: "application/json",
+        data: JSON.stringify({ fromUserId: Admin, toUserId: to, msg: msg }),
+        success: function () {
+            console.log("Message sent!");
         },
         error: function (err) {
             console.error("Error sending message: ", err);
